@@ -1,0 +1,67 @@
+---
+title: "Exam"
+author: 'Lizzie West (PID: 59010743)'
+date: "5/29/2022"
+output:
+  pdf_document: default
+  word_document: default
+---
+# Steps
+1. Make sure necessary packages are installed
+2. Load necessary packages
+3. Assign data to variable and look at data
+4. Format dates using lubridate
+5. Filter out entries that you do not want plotted
+6. Generate plot using ggplot
+
+**Load Packages**
+```{r}
+#Load necessary packages.They were already installed using install.packages("package_name")
+library(ggplot2)
+library(lubridate)
+library(dplyr)
+```
+
+**Import Data**
+```{r}
+#Import the data
+dat <- read.csv("covid19_variants.csv")
+```
+
+**Look at Data**
+```{r}
+#Look at the data
+head(dat)
+```
+
+**Format Dates**
+```{r}
+#Use lubridate to format the date column as actual dates and not a string
+dat$date <- ymd(dat$date)
+```
+
+**Filter Entries**
+```{r}
+#Filter out the "Other" and "Total" entries
+filter_dat <- filter(dat, variant_name != "Total" & variant_name != "Other")
+```
+
+
+**Plot**
+
+Plot the filtered data using ggplot. The x-axis is date in lubridate format
+and y-axis is percentage. Geom_line allows for a line plot that can be colored 
+by the variant. Labs enables labeling of axes and removal of label above variants by setting color="". scale_x_date allows you to set the x-axis tick marks, spacing by one month intervals, and labeling by abbreviated month name 
+and year. Lastly, we can apply the black and white theme and adjust the axis labels.
+```{r}
+#Plot!
+vid_plot <- ggplot(filter_dat) + aes(date, percentage) +
+  geom_line(aes(color = variant_name)) +
+  labs(x="", y="Percentage of sequenced specimens", 
+       title= "Covid-19 Variants in California", color="") + 
+  scale_x_date(date_breaks="1 month", date_labels="%b %Y") 
+  
+vid_plot + theme_bw() + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
